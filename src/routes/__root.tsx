@@ -10,6 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import faviconAsset from "../assets/favicon.png.asset.json";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -77,20 +78,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lione Apps develops custom management platforms and business systems for churches, organizations, and small businesses." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lione Apps develops custom management platforms and business systems for churches, organizations, and small businesses." },
+      { title: "Lione Apps" },
+      { name: "description", content: "Lione Apps 为教会、组织与小型企业打造专属管理平台与业务系统。" },
+      { name: "author", content: "Lione Apps" },
+      { property: "og:title", content: "Lione Apps" },
+      { property: "og:description", content: "Lione Apps 为教会、组织与小型企业打造专属管理平台与业务系统。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "Lione Apps develops custom management platforms and business systems for churches, organizations, and small businesses." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/de5380f9-afe3-419e-9e78-fbc79ca7069f/id-preview-63ea3b39--2d130cc1-09ab-4f39-8d01-2f4f7d2dede4.lovable.app-1780613412178.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/de5380f9-afe3-419e-9e78-fbc79ca7069f/id-preview-63ea3b39--2d130cc1-09ab-4f39-8d01-2f4f7d2dede4.lovable.app-1780613412178.png" },
+      { name: "twitter:title", content: "Lione Apps" },
+      { name: "twitter:description", content: "Lione Apps 为教会、组织与小型企业打造专属管理平台与业务系统。" },
     ],
     links: [
+      { rel: "icon", type: "image/png", href: faviconAsset.url },
+      { rel: "apple-touch-icon", href: faviconAsset.url },
       {
         rel: "stylesheet",
         href: appCss,
