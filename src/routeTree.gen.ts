@@ -9,12 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RenovationRouteImport } from './routes/renovation'
 import { Route as ProcessRouteImport } from './routes/process'
-import { Route as OfficeRouteImport } from './routes/office'
-import { Route as CustomRouteImport } from './routes/custom'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as ChurchRouteImport } from './routes/church'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
@@ -33,34 +29,14 @@ import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/med
 import { Route as AuthenticatedAdminProductsIdRouteImport } from './routes/_authenticated/admin.products.$id'
 import { Route as AuthenticatedAdminCasesIdRouteImport } from './routes/_authenticated/admin.cases.$id'
 
-const RenovationRoute = RenovationRouteImport.update({
-  id: '/renovation',
-  path: '/renovation',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ProcessRoute = ProcessRouteImport.update({
   id: '/process',
   path: '/process',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OfficeRoute = OfficeRouteImport.update({
-  id: '/office',
-  path: '/office',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CustomRoute = CustomRouteImport.update({
-  id: '/custom',
-  path: '/custom',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChurchRoute = ChurchRouteImport.update({
-  id: '/church',
-  path: '/church',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CasesRoute = CasesRouteImport.update({
@@ -160,12 +136,8 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/cases': typeof CasesRouteWithChildren
-  '/church': typeof ChurchRoute
   '/contact': typeof ContactRoute
-  '/custom': typeof CustomRoute
-  '/office': typeof OfficeRoute
   '/process': typeof ProcessRoute
-  '/renovation': typeof RenovationRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/cases/$slug': typeof CasesSlugRoute
   '/admin/cases': typeof AuthenticatedAdminCasesRouteWithChildren
@@ -184,12 +156,8 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/cases': typeof CasesRouteWithChildren
-  '/church': typeof ChurchRoute
   '/contact': typeof ContactRoute
-  '/custom': typeof CustomRoute
-  '/office': typeof OfficeRoute
   '/process': typeof ProcessRoute
-  '/renovation': typeof RenovationRoute
   '/cases/$slug': typeof CasesSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/cases/$id': typeof AuthenticatedAdminCasesIdRoute
@@ -206,12 +174,8 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/cases': typeof CasesRouteWithChildren
-  '/church': typeof ChurchRoute
   '/contact': typeof ContactRoute
-  '/custom': typeof CustomRoute
-  '/office': typeof OfficeRoute
   '/process': typeof ProcessRoute
-  '/renovation': typeof RenovationRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/cases/$slug': typeof CasesSlugRoute
   '/_authenticated/admin/cases': typeof AuthenticatedAdminCasesRouteWithChildren
@@ -232,12 +196,8 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/cases'
-    | '/church'
     | '/contact'
-    | '/custom'
-    | '/office'
     | '/process'
-    | '/renovation'
     | '/admin'
     | '/cases/$slug'
     | '/admin/cases'
@@ -256,12 +216,8 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/cases'
-    | '/church'
     | '/contact'
-    | '/custom'
-    | '/office'
     | '/process'
-    | '/renovation'
     | '/cases/$slug'
     | '/admin'
     | '/admin/cases/$id'
@@ -277,12 +233,8 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/cases'
-    | '/church'
     | '/contact'
-    | '/custom'
-    | '/office'
     | '/process'
-    | '/renovation'
     | '/_authenticated/admin'
     | '/cases/$slug'
     | '/_authenticated/admin/cases'
@@ -303,24 +255,13 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
   CasesRoute: typeof CasesRouteWithChildren
-  ChurchRoute: typeof ChurchRoute
   ContactRoute: typeof ContactRoute
-  CustomRoute: typeof CustomRoute
-  OfficeRoute: typeof OfficeRoute
   ProcessRoute: typeof ProcessRoute
-  RenovationRoute: typeof RenovationRoute
   ApiPublicMediaSplatRoute: typeof ApiPublicMediaSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/renovation': {
-      id: '/renovation'
-      path: '/renovation'
-      fullPath: '/renovation'
-      preLoaderRoute: typeof RenovationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/process': {
       id: '/process'
       path: '/process'
@@ -328,32 +269,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/office': {
-      id: '/office'
-      path: '/office'
-      fullPath: '/office'
-      preLoaderRoute: typeof OfficeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/custom': {
-      id: '/custom'
-      path: '/custom'
-      fullPath: '/custom'
-      preLoaderRoute: typeof CustomRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/contact': {
       id: '/contact'
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/church': {
-      id: '/church'
-      path: '/church'
-      fullPath: '/church'
-      preLoaderRoute: typeof ChurchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cases': {
@@ -569,14 +489,20 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
   CasesRoute: CasesRouteWithChildren,
-  ChurchRoute: ChurchRoute,
   ContactRoute: ContactRoute,
-  CustomRoute: CustomRoute,
-  OfficeRoute: OfficeRoute,
   ProcessRoute: ProcessRoute,
-  RenovationRoute: RenovationRoute,
   ApiPublicMediaSplatRoute: ApiPublicMediaSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
