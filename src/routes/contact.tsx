@@ -7,26 +7,30 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { SiteLayout, PageHero } from "@/components/SiteLayout";
+import { getSettings } from "@/lib/cms.functions";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "联系我们 — Lione Apps" },
       { name: "description", content: "通过表单、邮箱或在线咨询联系 Lione Apps,获取定制管理平台方案。" },
-      { property: "og:title", content: "联系我们 — Lione Apps" },
-      { property: "og:description", content: "聊聊您的项目需求。" },
     ],
   }),
+  loader: async () => ({ settings: await getSettings() }),
   component: ContactPage,
 });
 
 function ContactPage() {
+  const { settings } = Route.useLoaderData();
+  const contact = (settings.contact ?? {}) as { email?: string; intro?: string };
+  const email = contact.email || "hello@lioneapps.com";
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     const name = String(fd.get("name") || "").trim();
-    const contact = String(fd.get("contact") || "").trim();
-    if (!name || !contact) {
+    const c = String(fd.get("contact") || "").trim();
+    if (!name || !c) {
       toast.error("请填写姓名与联系方式");
       return;
     }
@@ -36,7 +40,7 @@ function ContactPage() {
 
   return (
     <SiteLayout>
-      <PageHero eyebrow="联系我们" title="聊聊您的项目" desc="欢迎咨询管理平台、办公系统、报名登记、报价系统与定制业务系统。" />
+      <PageHero eyebrow="联系我们" title="聊聊您的项目" desc={contact.intro || "欢迎咨询管理平台、办公系统、报名登记、报价系统与定制业务系统。"} />
 
       <section className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid gap-10 md:grid-cols-2">
@@ -49,8 +53,8 @@ function ContactPage() {
                 </div>
                 <div>
                   <div className="font-medium">邮箱</div>
-                  <a href="mailto:hello@lioneapps.com" className="text-sm text-muted-foreground hover:text-foreground">
-                    hello@lioneapps.com
+                  <a href={`mailto:${email}`} className="text-sm text-muted-foreground hover:text-foreground">
+                    {email}
                   </a>
                 </div>
               </div>
