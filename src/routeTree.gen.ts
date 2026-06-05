@@ -9,38 +9,214 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RenovationRouteImport } from './routes/renovation'
+import { Route as ProcessRouteImport } from './routes/process'
+import { Route as OfficeRouteImport } from './routes/office'
+import { Route as CustomRouteImport } from './routes/custom'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ChurchRouteImport } from './routes/church'
+import { Route as CasesRouteImport } from './routes/cases'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
 
+const RenovationRoute = RenovationRouteImport.update({
+  id: '/renovation',
+  path: '/renovation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProcessRoute = ProcessRouteImport.update({
+  id: '/process',
+  path: '/process',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfficeRoute = OfficeRouteImport.update({
+  id: '/office',
+  path: '/office',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomRoute = CustomRouteImport.update({
+  id: '/custom',
+  path: '/custom',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChurchRoute = ChurchRouteImport.update({
+  id: '/church',
+  path: '/church',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CasesRoute = CasesRouteImport.update({
+  id: '/cases',
+  path: '/cases',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CasesSlugRoute = CasesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CasesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/cases': typeof CasesRouteWithChildren
+  '/church': typeof ChurchRoute
+  '/contact': typeof ContactRoute
+  '/custom': typeof CustomRoute
+  '/office': typeof OfficeRoute
+  '/process': typeof ProcessRoute
+  '/renovation': typeof RenovationRoute
+  '/cases/$slug': typeof CasesSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/cases': typeof CasesRouteWithChildren
+  '/church': typeof ChurchRoute
+  '/contact': typeof ContactRoute
+  '/custom': typeof CustomRoute
+  '/office': typeof OfficeRoute
+  '/process': typeof ProcessRoute
+  '/renovation': typeof RenovationRoute
+  '/cases/$slug': typeof CasesSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/cases': typeof CasesRouteWithChildren
+  '/church': typeof ChurchRoute
+  '/contact': typeof ContactRoute
+  '/custom': typeof CustomRoute
+  '/office': typeof OfficeRoute
+  '/process': typeof ProcessRoute
+  '/renovation': typeof RenovationRoute
+  '/cases/$slug': typeof CasesSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/cases'
+    | '/church'
+    | '/contact'
+    | '/custom'
+    | '/office'
+    | '/process'
+    | '/renovation'
+    | '/cases/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/cases'
+    | '/church'
+    | '/contact'
+    | '/custom'
+    | '/office'
+    | '/process'
+    | '/renovation'
+    | '/cases/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/cases'
+    | '/church'
+    | '/contact'
+    | '/custom'
+    | '/office'
+    | '/process'
+    | '/renovation'
+    | '/cases/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  CasesRoute: typeof CasesRouteWithChildren
+  ChurchRoute: typeof ChurchRoute
+  ContactRoute: typeof ContactRoute
+  CustomRoute: typeof CustomRoute
+  OfficeRoute: typeof OfficeRoute
+  ProcessRoute: typeof ProcessRoute
+  RenovationRoute: typeof RenovationRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/renovation': {
+      id: '/renovation'
+      path: '/renovation'
+      fullPath: '/renovation'
+      preLoaderRoute: typeof RenovationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/process': {
+      id: '/process'
+      path: '/process'
+      fullPath: '/process'
+      preLoaderRoute: typeof ProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/office': {
+      id: '/office'
+      path: '/office'
+      fullPath: '/office'
+      preLoaderRoute: typeof OfficeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/custom': {
+      id: '/custom'
+      path: '/custom'
+      fullPath: '/custom'
+      preLoaderRoute: typeof CustomRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/church': {
+      id: '/church'
+      path: '/church'
+      fullPath: '/church'
+      preLoaderRoute: typeof ChurchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cases': {
+      id: '/cases'
+      path: '/cases'
+      fullPath: '/cases'
+      preLoaderRoute: typeof CasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +224,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cases/$slug': {
+      id: '/cases/$slug'
+      path: '/$slug'
+      fullPath: '/cases/$slug'
+      preLoaderRoute: typeof CasesSlugRouteImport
+      parentRoute: typeof CasesRoute
+    }
   }
 }
 
+interface CasesRouteChildren {
+  CasesSlugRoute: typeof CasesSlugRoute
+}
+
+const CasesRouteChildren: CasesRouteChildren = {
+  CasesSlugRoute: CasesSlugRoute,
+}
+
+const CasesRouteWithChildren = CasesRoute._addFileChildren(CasesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  CasesRoute: CasesRouteWithChildren,
+  ChurchRoute: ChurchRoute,
+  ContactRoute: ContactRoute,
+  CustomRoute: CustomRoute,
+  OfficeRoute: OfficeRoute,
+  ProcessRoute: ProcessRoute,
+  RenovationRoute: RenovationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
