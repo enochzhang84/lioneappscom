@@ -1,16 +1,21 @@
 import { Link } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 import type { ReactNode } from "react";
 
-const navLinks = [
-  { to: "/", label: "首页" },
-  { to: "/church", label: "教会管理平台" },
-  { to: "/renovation", label: "装修报价平台" },
-  { to: "/office", label: "企业办公平台" },
-  { to: "/cases", label: "案例" },
-  { to: "/process", label: "开发流程" },
-  { to: "/about", label: "关于我们" },
+const productLinks = [
+  { to: "/church", label: "教会管理平台", desc: "HOC3 — 事工全流程管理" },
+  { to: "/renovation", label: "装修报价平台", desc: "项目报价与客户管理" },
+  { to: "/office", label: "企业办公平台", desc: "考勤、排班、任务统计" },
+  { to: "/custom", label: "定制开发", desc: "按需打造的专属系统" },
 ] as const;
 
 export function SiteLayout({ children }: { children: ReactNode }) {
@@ -25,18 +30,58 @@ export function SiteLayout({ children }: { children: ReactNode }) {
             </div>
             <span>Lione Apps</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
-            {navLinks.slice(1).map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                className="hover:text-foreground transition"
-                activeProps={{ className: "text-foreground font-medium" }}
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
+
+          <NavigationMenu className="hidden md:flex">
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground">
+                  <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "text-foreground font-medium" }}>
+                    首页
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="bg-transparent text-muted-foreground hover:text-foreground data-[state=open]:text-foreground">
+                  产品
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[420px] gap-2 p-3 md:grid-cols-2">
+                    {productLinks.map((p) => (
+                      <li key={p.to}>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to={p.to}
+                            className="block rounded-md p-3 hover:bg-accent"
+                          >
+                            <div className="text-sm font-medium">{p.label}</div>
+                            <div className="mt-0.5 text-xs text-muted-foreground">{p.desc}</div>
+                          </Link>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground">
+                  <Link to="/cases" activeProps={{ className: "text-foreground font-medium" }}>案例</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground">
+                  <Link to="/about" activeProps={{ className: "text-foreground font-medium" }}>关于我们</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild className="px-3 py-2 text-sm text-muted-foreground hover:text-foreground">
+                  <Link to="/contact" activeProps={{ className: "text-foreground font-medium" }}>联系我们</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+
           <Button asChild size="sm">
             <Link to="/contact">联系咨询</Link>
           </Button>
@@ -55,25 +100,24 @@ export function SiteLayout({ children }: { children: ReactNode }) {
               <span>Lione Apps</span>
             </div>
             <p className="mt-3 text-muted-foreground">
-              专注于为教会、组织与小型企业打造专属管理平台与业务系统。
+              为教会、组织与小型企业打造专属管理平台。
             </p>
           </div>
           <div>
             <div className="font-semibold mb-3">产品</div>
             <ul className="space-y-2 text-muted-foreground">
-              <li><Link to="/church" className="hover:text-foreground">教会管理平台</Link></li>
-              <li><Link to="/renovation" className="hover:text-foreground">装修报价平台</Link></li>
-              <li><Link to="/office" className="hover:text-foreground">企业办公平台</Link></li>
-              <li><Link to="/custom" className="hover:text-foreground">定制管理系统</Link></li>
+              {productLinks.map((p) => (
+                <li key={p.to}><Link to={p.to} className="hover:text-foreground">{p.label}</Link></li>
+              ))}
             </ul>
           </div>
           <div>
             <div className="font-semibold mb-3">公司</div>
             <ul className="space-y-2 text-muted-foreground">
               <li><Link to="/cases" className="hover:text-foreground">项目案例</Link></li>
-              <li><Link to="/process" className="hover:text-foreground">开发流程</Link></li>
               <li><Link to="/about" className="hover:text-foreground">关于我们</Link></li>
               <li><Link to="/contact" className="hover:text-foreground">联系我们</Link></li>
+              <li><a href="mailto:hello@lioneapps.com" className="hover:text-foreground">hello@lioneapps.com</a></li>
             </ul>
           </div>
         </div>
