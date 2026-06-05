@@ -1,5 +1,5 @@
-// Public image proxy. Streams files from the private "site-media" bucket
-// without exposing service-role URLs. Path: /api/public/media/<storage-key>
+// Public image proxy. Streams files from the "site-media" bucket using the
+// publishable (anon) key — bucket is public, so no SERVICE_ROLE_KEY required.
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/api/public/media/$")({
@@ -8,8 +8,8 @@ export const Route = createFileRoute("/api/public/media/$")({
       GET: async ({ params }) => {
         const key = (params as { _splat?: string })._splat ?? "";
         if (!key || key.includes("..")) return new Response("Not found", { status: 404 });
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { data, error } = await supabaseAdmin.storage.from("site-media").download(key);
+        const { supabasePublic } = await import("@/integrations/supabase/public-server");
+        const { data, error } = await supabasePublic.storage.from("site-media").download(key);
         if (error || !data) return new Response("Not found", { status: 404 });
         const ab = await data.arrayBuffer();
         const ext = key.split(".").pop()?.toLowerCase();
