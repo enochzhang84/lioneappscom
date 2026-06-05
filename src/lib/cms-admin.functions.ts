@@ -122,9 +122,8 @@ export const adminGetCase = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin.from("cases").select("*").eq("id", data.id).maybeSingle();
+    await ensureAdmin(context.supabase, context.userId);
+    const { data: row, error } = await context.supabase.from("cases").select("*").eq("id", data.id).maybeSingle();
     if (error) throw new Error(error.message);
     return row;
   });
@@ -145,10 +144,9 @@ export const adminUpsertCase = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => caseInput.parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await ensureAdmin(context.supabase, context.userId);
     if (data.id) {
-      const { error } = await supabaseAdmin.from("cases").update({
+      const { error } = await context.supabase.from("cases").update({
         slug: data.slug, title: data.title, tag: data.tag ?? null,
         cover_image_url: data.cover_image_url ?? null, summary: data.summary ?? null,
         details: data.details, sort_order: data.sort_order, is_visible: data.is_visible,
@@ -156,7 +154,7 @@ export const adminUpsertCase = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
       return { id: data.id };
     }
-    const { data: row, error } = await supabaseAdmin.from("cases").insert({
+    const { data: row, error } = await context.supabase.from("cases").insert({
       slug: data.slug, title: data.title, tag: data.tag ?? null,
       cover_image_url: data.cover_image_url ?? null, summary: data.summary ?? null,
       details: data.details, sort_order: data.sort_order, is_visible: data.is_visible,
