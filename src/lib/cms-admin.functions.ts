@@ -2,10 +2,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 
-async function ensureAdmin(userId: string) {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
+async function ensureAdmin(supabase: SupabaseClient<Database>, userId: string) {
+  const { data, error } = await supabase
     .from("user_roles")
     .select("role")
     .eq("user_id", userId)
@@ -21,9 +22,8 @@ const slug = z.string().min(1).max(80).regex(/^[a-z0-9-]+$/, "slug 只能小写�
 export const adminListProducts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin
+    await ensureAdmin(context.supabase, context.userId);
+    const { data, error } = await context.supabase
       .from("products")
       .select("*")
       .order("sort_order", { ascending: true });
@@ -35,9 +35,8 @@ export const adminGetProduct = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin.from("products").select("*").eq("id", data.id).maybeSingle();
+    await ensureAdmin(context.supabase, context.userId);
+    const { data: row, error } = await context.supabase.from("products").select("*").eq("id", data.id).maybeSingle();
     if (error) throw new Error(error.message);
     return row;
   });
@@ -58,10 +57,9 @@ export const adminUpsertProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => productInput.parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await ensureAdmin(context.supabase, context.userId);
     if (data.id) {
-      const { error } = await supabaseAdmin.from("products").update({
+      const { error } = await context.supabase.from("products").update({
         slug: data.slug, title: data.title, tag: data.tag ?? null,
         short_desc: data.short_desc ?? null, hero_image_url: data.hero_image_url ?? null,
         long_content: data.long_content, sort_order: data.sort_order, is_visible: data.is_visible,
@@ -69,7 +67,7 @@ export const adminUpsertProduct = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
       return { id: data.id };
     }
-    const { data: row, error } = await supabaseAdmin.from("products").insert({
+    const { data: row, error } = await context.supabase.from("products").insert({
       slug: data.slug, title: data.title, tag: data.tag ?? null,
       short_desc: data.short_desc ?? null, hero_image_url: data.hero_image_url ?? null,
       long_content: data.long_content, sort_order: data.sort_order, is_visible: data.is_visible,
@@ -82,9 +80,8 @@ export const adminDeleteProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("products").delete().eq("id", data.id);
+    await ensureAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase.from("products").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -94,9 +91,8 @@ export const adminToggleProductVisibility = createServerFn({ method: "POST" })
   .inputValidator((d: { id: string; is_visible: boolean }) =>
     z.object({ id: z.string().uuid(), is_visible: z.boolean() }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("products").update({ is_visible: data.is_visible }).eq("id", data.id);
+    await ensureAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase.from("products").update({ is_visible: data.is_visible }).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -106,9 +102,8 @@ export const adminMoveProduct = createServerFn({ method: "POST" })
   .inputValidator((d: { id: string; sort_order: number }) =>
     z.object({ id: z.string().uuid(), sort_order: z.number().int() }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("products").update({ sort_order: data.sort_order }).eq("id", data.id);
+    await ensureAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase.from("products").update({ sort_order: data.sort_order }).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -117,9 +112,8 @@ export const adminMoveProduct = createServerFn({ method: "POST" })
 export const adminListCases = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin.from("cases").select("*").order("sort_order", { ascending: true });
+    await ensureAdmin(context.supabase, context.userId);
+    const { data, error } = await context.supabase.from("cases").select("*").order("sort_order", { ascending: true });
     if (error) throw new Error(error.message);
     return data ?? [];
   });
@@ -128,9 +122,8 @@ export const adminGetCase = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin.from("cases").select("*").eq("id", data.id).maybeSingle();
+    await ensureAdmin(context.supabase, context.userId);
+    const { data: row, error } = await context.supabase.from("cases").select("*").eq("id", data.id).maybeSingle();
     if (error) throw new Error(error.message);
     return row;
   });
@@ -151,10 +144,9 @@ export const adminUpsertCase = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => caseInput.parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await ensureAdmin(context.supabase, context.userId);
     if (data.id) {
-      const { error } = await supabaseAdmin.from("cases").update({
+      const { error } = await context.supabase.from("cases").update({
         slug: data.slug, title: data.title, tag: data.tag ?? null,
         cover_image_url: data.cover_image_url ?? null, summary: data.summary ?? null,
         details: data.details, sort_order: data.sort_order, is_visible: data.is_visible,
@@ -162,7 +154,7 @@ export const adminUpsertCase = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
       return { id: data.id };
     }
-    const { data: row, error } = await supabaseAdmin.from("cases").insert({
+    const { data: row, error } = await context.supabase.from("cases").insert({
       slug: data.slug, title: data.title, tag: data.tag ?? null,
       cover_image_url: data.cover_image_url ?? null, summary: data.summary ?? null,
       details: data.details, sort_order: data.sort_order, is_visible: data.is_visible,
@@ -175,9 +167,8 @@ export const adminDeleteCase = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("cases").delete().eq("id", data.id);
+    await ensureAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase.from("cases").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -187,9 +178,8 @@ export const adminToggleCaseVisibility = createServerFn({ method: "POST" })
   .inputValidator((d: { id: string; is_visible: boolean }) =>
     z.object({ id: z.string().uuid(), is_visible: z.boolean() }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("cases").update({ is_visible: data.is_visible }).eq("id", data.id);
+    await ensureAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase.from("cases").update({ is_visible: data.is_visible }).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -199,9 +189,8 @@ export const adminMoveCase = createServerFn({ method: "POST" })
   .inputValidator((d: { id: string; sort_order: number }) =>
     z.object({ id: z.string().uuid(), sort_order: z.number().int() }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("cases").update({ sort_order: data.sort_order }).eq("id", data.id);
+    await ensureAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase.from("cases").update({ sort_order: data.sort_order }).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -210,9 +199,8 @@ export const adminMoveCase = createServerFn({ method: "POST" })
 export const adminListSettings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin.from("site_settings").select("key, value");
+    await ensureAdmin(context.supabase, context.userId);
+    const { data, error } = await context.supabase.from("site_settings").select("key, value");
     if (error) throw new Error(error.message);
     return data ?? [];
   });
@@ -225,9 +213,8 @@ export const adminUpsertSetting = createServerFn({ method: "POST" })
       value: z.record(z.string(), z.any()),
     }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("site_settings").upsert({ key: data.key, value: data.value });
+    await ensureAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase.from("site_settings").upsert({ key: data.key, value: data.value });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -244,7 +231,7 @@ export const adminUploadImage = createServerFn({ method: "POST" })
       folder: z.string().max(40).regex(/^[a-z0-9_-]+$/).optional(),
     }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
+    await ensureAdmin(context.supabase, context.userId);
     const m = /^data:([a-zA-Z0-9/+.-]+);base64,(.*)$/.exec(data.data_url);
     if (!m) throw new Error("Invalid data URL");
     const contentType = m[1];
@@ -252,8 +239,7 @@ export const adminUploadImage = createServerFn({ method: "POST" })
     const ext = (data.filename.split(".").pop() || "bin").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 6);
     const folder = data.folder || "uploads";
     const key = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.storage.from("site-media").upload(key, buf, {
+    const { error } = await context.supabase.storage.from("site-media").upload(key, buf, {
       contentType, upsert: false,
     });
     if (error) throw new Error(error.message);
