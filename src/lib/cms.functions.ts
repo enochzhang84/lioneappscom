@@ -17,7 +17,7 @@ export type ProductCard = {
 };
 
 export type ProductFull = ProductCard & {
-  long_content: Record<string, unknown>;
+  long_content: Json;
 };
 
 export type CaseCard = {
@@ -31,7 +31,7 @@ export type CaseCard = {
 };
 
 export type CaseFull = CaseCard & {
-  details: Record<string, unknown>;
+  details: Json;
 };
 
 export const listProducts = createServerFn({ method: "GET" }).handler(
@@ -89,12 +89,12 @@ export const getCaseBySlug = createServerFn({ method: "GET" })
   });
 
 export const getSettings = createServerFn({ method: "GET" }).handler(
-  async (): Promise<Record<string, Record<string, unknown>>> => {
+  async (): Promise<Record<string, Json>> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin.from("site_settings").select("key, value");
     if (error) throw new Error(error.message);
-    const out: Record<string, Record<string, unknown>> = {};
-    for (const row of data ?? []) out[row.key as string] = (row.value as Record<string, unknown>) ?? {};
+    const out: Record<string, Json> = {};
+    for (const row of data ?? []) out[row.key as string] = (row.value as Json) ?? {};
     return out;
   },
 );
