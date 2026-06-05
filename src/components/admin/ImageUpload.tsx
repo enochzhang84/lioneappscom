@@ -4,7 +4,7 @@ import { adminUploadImage } from "@/lib/cms-admin.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { mediaUrl } from "@/lib/media";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { Upload, X } from "lucide-react";
 
 export function ImageUpload({
