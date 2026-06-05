@@ -2,10 +2,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 
-async function ensureAdmin(userId: string) {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
+async function ensureAdmin(supabase: SupabaseClient<Database>, userId: string) {
+  const { data, error } = await supabase
     .from("user_roles")
     .select("role")
     .eq("user_id", userId)
@@ -21,9 +22,8 @@ const slug = z.string().min(1).max(80).regex(/^[a-z0-9-]+$/, "slug 只能小写�
 export const adminListProducts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin
+    await ensureAdmin(context.supabase, context.userId);
+    const { data, error } = await context.supabase
       .from("products")
       .select("*")
       .order("sort_order", { ascending: true });
@@ -35,9 +35,8 @@ export const adminGetProduct = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin.from("products").select("*").eq("id", data.id).maybeSingle();
+    await ensureAdmin(context.supabase, context.userId);
+    const { data: row, error } = await context.supabase.from("products").select("*").eq("id", data.id).maybeSingle();
     if (error) throw new Error(error.message);
     return row;
   });
@@ -58,10 +57,9 @@ export const adminUpsertProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => productInput.parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await ensureAdmin(context.supabase, context.userId);
     if (data.id) {
-      const { error } = await supabaseAdmin.from("products").update({
+      const { error } = await context.supabase.from("products").update({
         slug: data.slug, title: data.title, tag: data.tag ?? null,
         short_desc: data.short_desc ?? null, hero_image_url: data.hero_image_url ?? null,
         long_content: data.long_content, sort_order: data.sort_order, is_visible: data.is_visible,
@@ -69,7 +67,7 @@ export const adminUpsertProduct = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
       return { id: data.id };
     }
-    const { data: row, error } = await supabaseAdmin.from("products").insert({
+    const { data: row, error } = await context.supabase.from("products").insert({
       slug: data.slug, title: data.title, tag: data.tag ?? null,
       short_desc: data.short_desc ?? null, hero_image_url: data.hero_image_url ?? null,
       long_content: data.long_content, sort_order: data.sort_order, is_visible: data.is_visible,
