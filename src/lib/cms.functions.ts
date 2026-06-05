@@ -3,6 +3,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Json = any;
+
 export type ProductCard = {
   id: string;
   slug: string;
