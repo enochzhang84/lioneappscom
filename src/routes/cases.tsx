@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout, PageHero } from "@/components/SiteLayout";
-import { listCases } from "@/lib/cms.functions";
+import { listCases, type CaseCard } from "@/lib/cms.functions";
 import { mediaUrl } from "@/lib/media";
 import { ArrowRight } from "lucide-react";
 
@@ -25,7 +25,7 @@ function CasesPage() {
           <p className="text-center text-muted-foreground py-12">还没有发布的案例。</p>
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
-            {cases.map((c) => {
+            {(cases as CaseCard[]).map((c) => {
               const img = mediaUrl(c.cover_image_url);
               return (
                 <Link

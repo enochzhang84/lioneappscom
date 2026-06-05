@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Mail, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLayout } from "@/components/SiteLayout";
-import { listProducts, getSettings } from "@/lib/cms.functions";
+import { listProducts, getSettings, type ProductCard } from "@/lib/cms.functions";
 import { mediaUrl } from "@/lib/media";
 
 export const Route = createFileRoute("/")({
@@ -54,7 +54,7 @@ function Home() {
           <p className="text-center text-muted-foreground py-12">还没有发布的产品。</p>
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
-            {products.map((p) => {
+            {(products as ProductCard[]).map((p) => {
               const img = mediaUrl(p.hero_image_url);
               return (
                 <Link
