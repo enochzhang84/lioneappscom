@@ -1,5 +1,5 @@
-// Public CMS reads. Uses admin client to bypass RLS for SSR-safe public reads,
-// but always filters to is_visible = true and returns only safe fields.
+// Public CMS reads. Uses the publishable (anon) key on the server — RLS allows
+// SELECT on rows where is_visible = true. Does NOT require SERVICE_ROLE_KEY.
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -36,8 +36,8 @@ export type CaseFull = CaseCard & {
 
 export const listProducts = createServerFn({ method: "GET" }).handler(
   async (): Promise<ProductCard[]> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin
+    const { supabasePublic } = await import("@/integrations/supabase/public-server");
+    const { data, error } = await supabasePublic
       .from("products")
       .select("id, slug, title, tag, short_desc, hero_image_url, sort_order")
       .eq("is_visible", true)
@@ -50,8 +50,8 @@ export const listProducts = createServerFn({ method: "GET" }).handler(
 export const getProductBySlug = createServerFn({ method: "GET" })
   .inputValidator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(100) }).parse(d))
   .handler(async ({ data }): Promise<ProductFull | null> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin
+    const { supabasePublic } = await import("@/integrations/supabase/public-server");
+    const { data: row, error } = await supabasePublic
       .from("products")
       .select("id, slug, title, tag, short_desc, hero_image_url, sort_order, long_content")
       .eq("slug", data.slug)
@@ -63,8 +63,8 @@ export const getProductBySlug = createServerFn({ method: "GET" })
 
 export const listCases = createServerFn({ method: "GET" }).handler(
   async (): Promise<CaseCard[]> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin
+    const { supabasePublic } = await import("@/integrations/supabase/public-server");
+    const { data, error } = await supabasePublic
       .from("cases")
       .select("id, slug, title, tag, cover_image_url, summary, sort_order")
       .eq("is_visible", true)
@@ -77,8 +77,8 @@ export const listCases = createServerFn({ method: "GET" }).handler(
 export const getCaseBySlug = createServerFn({ method: "GET" })
   .inputValidator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(100) }).parse(d))
   .handler(async ({ data }): Promise<CaseFull | null> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin
+    const { supabasePublic } = await import("@/integrations/supabase/public-server");
+    const { data: row, error } = await supabasePublic
       .from("cases")
       .select("id, slug, title, tag, cover_image_url, summary, sort_order, details")
       .eq("slug", data.slug)
@@ -90,8 +90,8 @@ export const getCaseBySlug = createServerFn({ method: "GET" })
 
 export const getSettings = createServerFn({ method: "GET" }).handler(
   async (): Promise<Record<string, Json>> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin.from("site_settings").select("key, value");
+    const { supabasePublic } = await import("@/integrations/supabase/public-server");
+    const { data, error } = await supabasePublic.from("site_settings").select("key, value");
     if (error) throw new Error(error.message);
     const out: Record<string, Json> = {};
     for (const row of data ?? []) out[row.key as string] = (row.value as Json) ?? {};
