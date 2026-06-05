@@ -167,9 +167,8 @@ export const adminDeleteCase = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("cases").delete().eq("id", data.id);
+    await ensureAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase.from("cases").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -179,9 +178,8 @@ export const adminToggleCaseVisibility = createServerFn({ method: "POST" })
   .inputValidator((d: { id: string; is_visible: boolean }) =>
     z.object({ id: z.string().uuid(), is_visible: z.boolean() }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("cases").update({ is_visible: data.is_visible }).eq("id", data.id);
+    await ensureAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase.from("cases").update({ is_visible: data.is_visible }).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -191,9 +189,8 @@ export const adminMoveCase = createServerFn({ method: "POST" })
   .inputValidator((d: { id: string; sort_order: number }) =>
     z.object({ id: z.string().uuid(), sort_order: z.number().int() }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("cases").update({ sort_order: data.sort_order }).eq("id", data.id);
+    await ensureAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase.from("cases").update({ sort_order: data.sort_order }).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
