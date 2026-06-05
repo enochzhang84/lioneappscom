@@ -1,73 +1,56 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
 import { SiteLayout, PageHero } from "@/components/SiteLayout";
+import { listCases } from "@/lib/cms.functions";
+import { mediaUrl } from "@/lib/media";
+import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/cases")({
   head: () => ({
     meta: [
       { title: "项目案例 — Lione Apps" },
-      { name: "description", content: "Lione Apps 已交付的真实管理平台与业务系统案例展示。" },
-      { property: "og:title", content: "项目案例 — Lione Apps" },
-      { property: "og:description", content: "已上线运行的管理平台与业务系统。" },
+      { name: "description", content: "查看 Lione Apps 已完成的项目案例。" },
     ],
   }),
+  loader: async () => ({ cases: await listCases() }),
   component: CasesPage,
 });
 
-const cases = [
-  {
-    slug: "hoc3",
-    tag: "教会管理",
-    title: "HOC3 教会管理平台",
-    desc: "覆盖事工全流程的一体化管理系统，已稳定服务多年。",
-    items: ["新人登记", "主日学", "活动报名", "厨房 / 影音", "数字标牌", "统计与权限"],
-  },
-  {
-    slug: "renovation-quote",
-    tag: "工程报价",
-    title: "装修报价管理系统",
-    desc: "项目分类、报价、客户管理与 Excel 导出全打通。",
-    items: ["项目分类", "报价计算", "客户管理", "报价单生成", "项目统计"],
-  },
-];
-
 function CasesPage() {
+  const { cases } = Route.useLoaderData();
   return (
     <SiteLayout>
-      <PageHero eyebrow="项目案例" title="真实交付的管理平台" desc="每个项目都来自真实客户的实际业务需求。" />
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <div className="grid gap-6 md:grid-cols-2">
-          {cases.map((c) => (
-            <Link
-              key={c.slug}
-              to="/cases/$slug"
-              params={{ slug: c.slug }}
-              className="group overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)]"
-            >
-              <div className="h-44 w-full" style={{ background: "var(--gradient-hero)" }}>
-                <div className="flex h-full items-end p-6">
-                  <span className="rounded-full bg-background/95 px-3 py-1 text-xs font-medium text-primary">
-                    {c.tag}
-                  </span>
-                </div>
-              </div>
-              <div className="p-7">
-                <h3 className="text-xl font-semibold flex items-center gap-2">
-                  {c.title}
-                  <ArrowRight className="h-4 w-4 text-primary opacity-0 -translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground">{c.desc}</p>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {c.items.map((it) => (
-                    <span key={it} className="rounded-md bg-secondary px-2.5 py-1 text-xs text-secondary-foreground">
-                      {it}
+      <PageHero eyebrow="案例" title="项目案例" desc="一些已交付的代表性项目。" />
+      <section className="mx-auto max-w-6xl px-6 py-12">
+        {cases.length === 0 ? (
+          <p className="text-center text-muted-foreground py-12">还没有发布的案例。</p>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2">
+            {cases.map((c) => {
+              const img = mediaUrl(c.cover_image_url);
+              return (
+                <Link
+                  key={c.id}
+                  to="/cases/$slug"
+                  params={{ slug: c.slug }}
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-1 hover:border-primary/30"
+                >
+                  <div className="aspect-[16/10] overflow-hidden bg-secondary grid place-items-center">
+                    {img ? <img src={img} alt={c.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                         : <span className="text-3xl text-muted-foreground/40">{c.title.slice(0, 2)}</span>}
+                  </div>
+                  <div className="p-6">
+                    {c.tag && <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs text-primary">{c.tag}</span>}
+                    <h3 className="mt-3 text-xl font-semibold">{c.title}</h3>
+                    {c.summary && <p className="mt-1.5 text-sm text-muted-foreground">{c.summary}</p>}
+                    <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
+                      查看详情 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                     </span>
-                  ))}
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </section>
     </SiteLayout>
   );

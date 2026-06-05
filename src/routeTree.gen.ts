@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as CasesSlugRouteImport } from './routes/cases.$slug'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
@@ -61,6 +62,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsSlugRoute = ProductsSlugRouteImport.update({
+  id: '/products/$slug',
+  path: '/products/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CasesSlugRoute = CasesSlugRouteImport.update({
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/process': typeof ProcessRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/cases/$slug': typeof CasesSlugRoute
+  '/products/$slug': typeof ProductsSlugRoute
   '/admin/cases': typeof AuthenticatedAdminCasesRouteWithChildren
   '/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
   '/admin/settings': typeof AuthenticatedAdminSettingsRouteWithChildren
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/process': typeof ProcessRoute
   '/cases/$slug': typeof CasesSlugRoute
+  '/products/$slug': typeof ProductsSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/cases/$id': typeof AuthenticatedAdminCasesIdRoute
   '/admin/products/$id': typeof AuthenticatedAdminProductsIdRoute
@@ -178,6 +186,7 @@ export interface FileRoutesById {
   '/process': typeof ProcessRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/cases/$slug': typeof CasesSlugRoute
+  '/products/$slug': typeof ProductsSlugRoute
   '/_authenticated/admin/cases': typeof AuthenticatedAdminCasesRouteWithChildren
   '/_authenticated/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRouteWithChildren
@@ -200,6 +209,7 @@ export interface FileRouteTypes {
     | '/process'
     | '/admin'
     | '/cases/$slug'
+    | '/products/$slug'
     | '/admin/cases'
     | '/admin/products'
     | '/admin/settings'
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/process'
     | '/cases/$slug'
+    | '/products/$slug'
     | '/admin'
     | '/admin/cases/$id'
     | '/admin/products/$id'
@@ -237,6 +248,7 @@ export interface FileRouteTypes {
     | '/process'
     | '/_authenticated/admin'
     | '/cases/$slug'
+    | '/products/$slug'
     | '/_authenticated/admin/cases'
     | '/_authenticated/admin/products'
     | '/_authenticated/admin/settings'
@@ -257,6 +269,7 @@ export interface RootRouteChildren {
   CasesRoute: typeof CasesRouteWithChildren
   ContactRoute: typeof ContactRoute
   ProcessRoute: typeof ProcessRoute
+  ProductsSlugRoute: typeof ProductsSlugRoute
   ApiPublicMediaSplatRoute: typeof ApiPublicMediaSplatRoute
 }
 
@@ -309,6 +322,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products/$slug': {
+      id: '/products/$slug'
+      path: '/products/$slug'
+      fullPath: '/products/$slug'
+      preLoaderRoute: typeof ProductsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cases/$slug': {
@@ -491,6 +511,7 @@ const rootRouteChildren: RootRouteChildren = {
   CasesRoute: CasesRouteWithChildren,
   ContactRoute: ContactRoute,
   ProcessRoute: ProcessRoute,
+  ProductsSlugRoute: ProductsSlugRoute,
   ApiPublicMediaSplatRoute: ApiPublicMediaSplatRoute,
 }
 export const routeTree = rootRouteImport
