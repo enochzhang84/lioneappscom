@@ -78,7 +78,7 @@ export const Route = createFileRoute("/cases/$slug")({
 });
 
 function CaseDetail() {
-  const c = Route.useLoaderData();
+  const c = Route.useLoaderData() as CaseData;
   return (
     <SiteLayout>
       <PageHero eyebrow={c.tag} title={c.title} desc={c.summary} />
