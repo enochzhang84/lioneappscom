@@ -199,9 +199,8 @@ export const adminMoveCase = createServerFn({ method: "POST" })
 export const adminListSettings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin.from("site_settings").select("key, value");
+    await ensureAdmin(context.supabase, context.userId);
+    const { data, error } = await context.supabase.from("site_settings").select("key, value");
     if (error) throw new Error(error.message);
     return data ?? [];
   });
@@ -214,9 +213,8 @@ export const adminUpsertSetting = createServerFn({ method: "POST" })
       value: z.record(z.string(), z.any()),
     }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("site_settings").upsert({ key: data.key, value: data.value });
+    await ensureAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase.from("site_settings").upsert({ key: data.key, value: data.value });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -233,7 +231,7 @@ export const adminUploadImage = createServerFn({ method: "POST" })
       folder: z.string().max(40).regex(/^[a-z0-9_-]+$/).optional(),
     }).parse(d))
   .handler(async ({ context, data }) => {
-    await ensureAdmin(context.userId);
+    await ensureAdmin(context.supabase, context.userId);
     const m = /^data:([a-zA-Z0-9/+.-]+);base64,(.*)$/.exec(data.data_url);
     if (!m) throw new Error("Invalid data URL");
     const contentType = m[1];
@@ -241,8 +239,7 @@ export const adminUploadImage = createServerFn({ method: "POST" })
     const ext = (data.filename.split(".").pop() || "bin").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 6);
     const folder = data.folder || "uploads";
     const key = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.storage.from("site-media").upload(key, buf, {
+    const { error } = await context.supabase.storage.from("site-media").upload(key, buf, {
       contentType, upsert: false,
     });
     if (error) throw new Error(error.message);
