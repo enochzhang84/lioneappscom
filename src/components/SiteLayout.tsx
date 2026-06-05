@@ -12,10 +12,10 @@ import {
 import type { ReactNode } from "react";
 
 const productLinks = [
-  { to: "/church", label: "教会管理平台", desc: "HOC3 — 事工全流程管理" },
-  { to: "/renovation", label: "装修报价平台", desc: "项目报价与客户管理" },
-  { to: "/office", label: "企业办公平台", desc: "考勤、排班、任务统计" },
-  { to: "/custom", label: "定制开发", desc: "按需打造的专属系统" },
+  { slug: "church", label: "教会管理平台", desc: "HOC3 — 事工全流程管理" },
+  { slug: "renovation", label: "装修报价平台", desc: "项目报价与客户管理" },
+  { slug: "office", label: "企业办公平台", desc: "考勤、排班、任务统计" },
+  { slug: "custom", label: "定制开发", desc: "按需打造的专属系统" },
 ] as const;
 
 export function SiteLayout({ children }: { children: ReactNode }) {
@@ -48,10 +48,11 @@ export function SiteLayout({ children }: { children: ReactNode }) {
                 <NavigationMenuContent>
                   <ul className="grid w-[420px] gap-2 p-3 md:grid-cols-2">
                     {productLinks.map((p) => (
-                      <li key={p.to}>
+                      <li key={p.slug}>
                         <NavigationMenuLink asChild>
                           <Link
-                            to={p.to}
+                            to="/products/$slug"
+                            params={{ slug: p.slug }}
                             className="block rounded-md p-3 hover:bg-accent"
                           >
                             <div className="text-sm font-medium">{p.label}</div>
@@ -107,7 +108,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
             <div className="font-semibold mb-3">产品</div>
             <ul className="space-y-2 text-muted-foreground">
               {productLinks.map((p) => (
-                <li key={p.to}><Link to={p.to} className="hover:text-foreground">{p.label}</Link></li>
+                <li key={p.slug}><Link to="/products/$slug" params={{ slug: p.slug }} className="hover:text-foreground">{p.label}</Link></li>
               ))}
             </ul>
           </div>
