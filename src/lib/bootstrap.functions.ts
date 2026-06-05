@@ -1,13 +1,6 @@
-// Admin detection + (optional) first-admin bootstrap.
-//
-// Detection uses the user's own authenticated Supabase client (RLS policy
-// "Users can read their own roles" allows this). This works WITHOUT any
-// service role key, so VPS deployments that only ship the publishable key
-// can still log into /admin.
-//
-// First-admin auto-claim requires SUPABASE_SERVICE_ROLE_KEY (because
-// INSERT into user_roles is restricted to existing admins). If the key is
-// missing we silently skip the claim — detection still returns correctly.
+// Admin detection + first-admin bootstrap.
+// Uses the signed-in user's session and database RLS, so it does not require
+// SUPABASE_SERVICE_ROLE_KEY on VPS deployments.
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
@@ -26,28 +19,13 @@ export const claimFirstAdmin = createServerFn({ method: "POST" })
     if (mineErr) throw new Error(mineErr.message);
     if (mine) return { is_admin: true, claimed: false };
 
-    // 2) Not an admin yet. Try first-admin bootstrap via service role.
-    //    If service role key is unavailable (e.g. VPS without it), just
-    //    report is_admin=false without failing the whole request.
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      return { is_admin: false, claimed: false };
-    }
-
+    // 2) Not an admin yet. Attempt first-admin bootstrap as the current user.
+    // RLS + trigger allow this only when no admin exists; otherwise it fails.
     try {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { count, error: cErr } = await supabaseAdmin
-        .from("user_roles")
-        .select("*", { count: "exact", head: true })
-        .eq("role", "admin");
-      if (cErr) throw new Error(cErr.message);
-      if ((count ?? 0) > 0) {
-        // Admins exist, just not me.
-        return { is_admin: false, claimed: false };
-      }
-      const { error } = await supabaseAdmin
+      const { error } = await supabase
         .from("user_roles")
         .insert({ user_id: userId, role: "admin" });
-      if (error) throw new Error(error.message);
+      if (error) return { is_admin: false, claimed: false };
       return { is_admin: true, claimed: true };
     } catch (e) {
       console.error("[claimFirstAdmin] bootstrap skipped:", (e as Error).message);
