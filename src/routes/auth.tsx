@@ -81,6 +81,14 @@ function AuthPage() {
             >
               {mode === "login" ? "没有账号？注册一个" : "已有账号？去登录"}
             </button>
+            {mode === "login" && (
+              <Link
+                to="/forgot-password"
+                className="block text-center text-sm text-muted-foreground hover:text-foreground"
+              >
+                忘记密码？
+              </Link>
+            )}
           </form>
         </CardContent>
       </Card>

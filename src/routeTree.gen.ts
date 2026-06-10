@@ -9,7 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UpdatePasswordRouteImport } from './routes/update-password'
+import { Route as SuccessRouteImport } from './routes/success'
 import { Route as ProcessRouteImport } from './routes/process'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as ErrorRouteImport } from './routes/error'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -30,9 +34,29 @@ import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/med
 import { Route as AuthenticatedAdminProductsIdRouteImport } from './routes/_authenticated/admin.products.$id'
 import { Route as AuthenticatedAdminCasesIdRouteImport } from './routes/_authenticated/admin.cases.$id'
 
+const UpdatePasswordRoute = UpdatePasswordRouteImport.update({
+  id: '/update-password',
+  path: '/update-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuccessRoute = SuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProcessRoute = ProcessRouteImport.update({
   id: '/process',
   path: '/process',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ErrorRoute = ErrorRouteImport.update({
+  id: '/error',
+  path: '/error',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -143,7 +167,11 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/cases': typeof CasesRouteWithChildren
   '/contact': typeof ContactRoute
+  '/error': typeof ErrorRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/process': typeof ProcessRoute
+  '/success': typeof SuccessRoute
+  '/update-password': typeof UpdatePasswordRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/cases/$slug': typeof CasesSlugRoute
   '/products/$slug': typeof ProductsSlugRoute
@@ -164,7 +192,11 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/cases': typeof CasesRouteWithChildren
   '/contact': typeof ContactRoute
+  '/error': typeof ErrorRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/process': typeof ProcessRoute
+  '/success': typeof SuccessRoute
+  '/update-password': typeof UpdatePasswordRoute
   '/cases/$slug': typeof CasesSlugRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -183,7 +215,11 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/cases': typeof CasesRouteWithChildren
   '/contact': typeof ContactRoute
+  '/error': typeof ErrorRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/process': typeof ProcessRoute
+  '/success': typeof SuccessRoute
+  '/update-password': typeof UpdatePasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/cases/$slug': typeof CasesSlugRoute
   '/products/$slug': typeof ProductsSlugRoute
@@ -206,7 +242,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cases'
     | '/contact'
+    | '/error'
+    | '/forgot-password'
     | '/process'
+    | '/success'
+    | '/update-password'
     | '/admin'
     | '/cases/$slug'
     | '/products/$slug'
@@ -227,7 +267,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cases'
     | '/contact'
+    | '/error'
+    | '/forgot-password'
     | '/process'
+    | '/success'
+    | '/update-password'
     | '/cases/$slug'
     | '/products/$slug'
     | '/admin'
@@ -245,7 +289,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/cases'
     | '/contact'
+    | '/error'
+    | '/forgot-password'
     | '/process'
+    | '/success'
+    | '/update-password'
     | '/_authenticated/admin'
     | '/cases/$slug'
     | '/products/$slug'
@@ -268,18 +316,50 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CasesRoute: typeof CasesRouteWithChildren
   ContactRoute: typeof ContactRoute
+  ErrorRoute: typeof ErrorRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   ProcessRoute: typeof ProcessRoute
+  SuccessRoute: typeof SuccessRoute
+  UpdatePasswordRoute: typeof UpdatePasswordRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
   ApiPublicMediaSplatRoute: typeof ApiPublicMediaSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/update-password': {
+      id: '/update-password'
+      path: '/update-password'
+      fullPath: '/update-password'
+      preLoaderRoute: typeof UpdatePasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/success': {
+      id: '/success'
+      path: '/success'
+      fullPath: '/success'
+      preLoaderRoute: typeof SuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/process': {
       id: '/process'
       path: '/process'
       fullPath: '/process'
       preLoaderRoute: typeof ProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/error': {
+      id: '/error'
+      path: '/error'
+      fullPath: '/error'
+      preLoaderRoute: typeof ErrorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -510,7 +590,11 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CasesRoute: CasesRouteWithChildren,
   ContactRoute: ContactRoute,
+  ErrorRoute: ErrorRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   ProcessRoute: ProcessRoute,
+  SuccessRoute: SuccessRoute,
+  UpdatePasswordRoute: UpdatePasswordRoute,
   ProductsSlugRoute: ProductsSlugRoute,
   ApiPublicMediaSplatRoute: ApiPublicMediaSplatRoute,
 }
